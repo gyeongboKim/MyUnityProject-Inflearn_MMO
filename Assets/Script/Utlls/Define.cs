@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+// Defin.cs 은 엔진 전반에 걸쳐 사용되는 규칙 및 상수를 정의하는 데 사용됩니다.
 public class Define
 {
     public enum WorldObject
@@ -18,6 +19,7 @@ public class Define
         Ground = 9,
         Block = 10,
     }
+
     public enum Scene
     {
         Unknown,
@@ -55,8 +57,6 @@ public class Define
         QuarterView,
     }
 
-
-
     public enum State
     {
         Idle,
@@ -65,4 +65,8 @@ public class Define
         GetHit,
         Die,
     }
+
+
+
+
 }

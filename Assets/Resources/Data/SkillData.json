@@ -1,0 +1,36 @@
+{
+  "skills": [
+    {
+      "id": 1,
+      "name": "Basic Attack",
+      "description": "A simple attack with your weapon.",
+      "job": "None", // 모든 직업이 사용 가능
+      "skillType": 5, // Active(1) | Attack(4) = 5
+      "targetingType": "Single_Target",
+      "targetType": "Enemy",
+      "cooldown": 0.0, // 공격 속도로 제어할 것이므로 0
+      "manaCost": 0,
+      "range": 2.0, // 무기 사거리로 대체될 수 있음
+      "damageMultiplier": 1.0, // 플레이어의 기본 공격력(stat.attack)을 100% 사용
+      "prefabPath": "", // 기본 공격은 별도 이펙트가 없을 수 있음
+      "iconPath": "" // UI에 표시할 필요 없음
+    },
+    {
+      "id": 10001,
+      "name": "Strike",
+      "description": "",
+      "job": "Warrior",
+      "skillType": 5 // Active(1) | Attack(4) = 5
+
+
+    },
+    {
+      "level": "3",
+      "maxHp": "300",
+      "attack": "27",
+      "defense": "20",
+      "totalExp": "20"
+    }
+  ]
+
+}

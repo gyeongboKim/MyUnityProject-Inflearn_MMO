@@ -147,7 +147,14 @@ public class PlayerController : BaseController
     #region UpdateDie()
     //protected override void UpdateDie()
     //{
-    //    //HP 개념 추가 시 작성
+    //HP 개념 추가 시 작성
+    // 1. 사망 애니메이션 재생 - >PlayAnimationForState
+    // 2. 사망 후 오브젝트 제거
+    // 3. 경험치 획득
+    // 4. 부활
+    // 5. 게임 오버
+    // 6. 등등..
+
     //}
     #endregion
     #region OnKeyboard()
@@ -193,7 +200,6 @@ public class PlayerController : BaseController
         
         if (_lockTarget != null)
         {
-            // TODO
             Stat targetStat = _lockTarget.GetComponent<Stat>();
             targetStat.OnAttacked(_stat);
         }
@@ -220,6 +226,7 @@ public class PlayerController : BaseController
                 break;
             case Define.State.Skill:
                 {
+                    // 마우스를 뗀 경우 스킬 종료
                     if (mouseEvent == Define.MouseEvent.PointerUp)
                         _stopSkill = true;
                 }
@@ -228,6 +235,7 @@ public class PlayerController : BaseController
 
     }
 
+    //  Idle, Moving 상태에서 마우스 이벤트 처리
     void OnMouseEvent_IdleRun(Define.MouseEvent mouseEvent) 
     {
         //마우스 클릭 지점에 ray
@@ -269,6 +277,7 @@ public class PlayerController : BaseController
         }
     }
 
+    // 각 상태에 맞는 애니메이션 재생
     public override void PlayAnimationForState(Define.State state)
     {
         Animator anim = GetComponent<Animator>();
