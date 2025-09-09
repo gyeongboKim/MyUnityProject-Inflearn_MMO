@@ -15,14 +15,14 @@ public abstract class BaseController : MonoBehaviour
 
     public Define.WorldObject WorldObjectType { get; protected set; } = Define.WorldObject.Unknown;
 
-    
+    public Animator _anim;
+
     protected virtual Define.State State
     {
         get { return _state; }
         set
         {
             _state = value;
-
             //상태 변환에 따라 애니메이션 재생 메서드 호출
             PlayAnimationForState(_state);
 
@@ -54,6 +54,8 @@ public abstract class BaseController : MonoBehaviour
                 break;
 
         }
+
+        CheckStateTransitions();
     }
 
     public virtual void PlayAnimationForState(Define.State state) { }
@@ -63,5 +65,9 @@ public abstract class BaseController : MonoBehaviour
     protected virtual void UpdateIdle() { }
     protected virtual void UpdateSkill() { }
 
-    
+    //상태 전이 체크
+    protected virtual void CheckStateTransitions() { }
+
+
+
 }

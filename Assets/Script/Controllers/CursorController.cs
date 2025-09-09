@@ -27,16 +27,14 @@ public class CursorController : MonoBehaviour
 
     void Update()
     {
-        //마우스를 누른 상태에서는 커서가 변하지 않도록 함
-        if (Input.GetMouseButton(0))
-            return;
+        ////마우스를 누른 상태에서는 커서가 변하지 않도록 함
+        //if (Input.GetMouseButton(0))
+        //    return;
+
+
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-        //Debug.DrawRay(Camera.main.transform.position, ray.direction * 100.0f, Color.red, 1.0f);
-        //LayerMask mask = LayerMask.GetMask("Wall");
-
         RaycastHit hit;
-        //wall
+        
         if (Physics.Raycast(ray, out hit, 100.0f, _mask))
         {
             if (hit.collider.gameObject.layer == (int)Define.Layer.Monster)

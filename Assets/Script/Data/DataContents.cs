@@ -68,7 +68,7 @@ namespace Data
         Chain,      // 여러 대상에게 연쇄적으로 효과 적용 (나중을 위해)
     }
 
-    public enum TargetType
+    public enum SkillTargetType
     {
         None,
         Enemy,
@@ -105,43 +105,60 @@ namespace Data
     #endregion Stat
 
     #region Skill
-    public class SkillData
+    [Serializable]
+    public class Skill
     {
         public int id;
         public string name;
         public string description;              //설명
         public Job job;
         public SkillType skillType;             //스킬의 종류 (액티브, 패시브, 버프 등)
-        public SkillEffectLogic SkillEffectLogic;     //스킬 효과 적용 방식
-        public TargetType targetType;           //스킬의 대상 (적, 아군, 자신 등)'
+        public SkillEffectLogic skillEffectLogic;     //스킬 효과 적용 방식
+        public SkillTargetType skillTargetType;           //스킬의 대상 (적, 아군, 자신 등)'
         public ProjectileInfo projectile;       //스킬의 타겟팅 방식이 투사체인 경우
         public int powerBasicdamage;          // 스킬의 공격력 (데미지 계산에 사용)
         public int powerBasicHeal;            //스킬의 치유량 (힐 계산에 사용)
         public int manaCost;       //스킬 사용에 필요한 마나 비용
         public float skillMultiplier;   //스킬 계수
         public float cooldown;     //스킬의 재사용 대기시간
-        public float activeTime;
+        public float activeTime;    //스킬의 지속 시간 (버프, 디버프 등)
         public float range;        //스킬의 사거리
         public float areaOfEffect; //스킬의 효과 범위 (광역 스킬일 경우)
         public string iconPath;     //스킬 아이콘 경로
     }
-    public class ProjectileInfo //targetingType이 Projectile 때
+
+    [Serializable]
+    public class ProjectileInfo
     {
-        public string name;
-        public float speed;
-        public int range;       //투사체 최대 거리
-        public string prefab;   //프리팹 경로
+        public string prefabPath;           // 투사체 프리팹 경로
+        public float speed;                 // 투사체 이동 속도
+        public float maxDistance;           // 최대 비행 거리
+        public float radius;                // 충돌 판정 반경
+        public bool piercing;               // 관통 여부
+        public int maxTargets;              // 최대 타격 대상 수 (관통 시)
+        public bool destroyOnHit;           // 충돌 시 파괴 여부
+        public string hitEffectPath;        // 충돌 이펙트 경로
+        public float gravityScale;          // 중력 영향도 (포물선 투사체용)
+        public ProjectileMovementType movementType; // 투사체 이동 방식
+    }
+
+    public enum ProjectileMovementType
+    {
+        Straight,       // 직선 이동
+        Homing,         // 유도탄
+        Arc,            // 포물선 (화살, 폭탄 등)
+        Boomerang,      // 부메랑 (되돌아옴)
     }
 
     [Serializable]
-    public class SkillDataLoader : ILoader<int, SkillData>
+    public class SkillData : ILoader<int, Skill>
     {
-        public List<SkillData> skills = new List<SkillData>();
+        public List<Skill> skills = new List<Skill>();
 
-        public Dictionary<int, SkillData> MakeDict()
+        public Dictionary<int, Skill> MakeDict()
         {
-            Dictionary<int, SkillData> dict = new Dictionary<int, SkillData>();
-            foreach (SkillData skill in skills)
+            Dictionary<int, Skill> dict = new Dictionary<int, Skill>();
+            foreach (Skill skill in skills)
                 dict.Add(skill.id, skill);
             return dict;
 

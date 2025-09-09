@@ -58,8 +58,13 @@ public class PlayerController : BaseController
     bool _stopSkill = false;
 
     float _attackRange = 2;
+    // 상호작용 사거리
+    float _interactionRange = 2.0f;
 
     int _mask = (1 << (int)Define.Layer.Ground) | (1 << (int)Define.Layer.Monster);
+
+    private bool _isMousePressed = false;
+    private Vector3 _lastMousePosition;
 
     public override void Init()
     {
@@ -74,7 +79,7 @@ public class PlayerController : BaseController
             Managers.UI.MakeWorldSpaceUI<UI_HPBar>(transform);
 
 
-        
+
     }
 
     //protected override void UpdateIdle()
@@ -87,21 +92,21 @@ public class PlayerController : BaseController
     {
         if (State != Define.State.Moving)
             return;
-        //락온된 몬스터가 내 사정거리보다 가까우면 공격 상태로 변경
+        if (_isMousePressed) { CheckAndUpdateTarget(); }
         //타겟 체크
-        if(_lockTarget != null)
+        if (_lockTarget != null)
         {
             _destPos = _lockTarget.transform.position;
             float distanceToLockTarget = (_destPos - transform.position).magnitude;
-
-            if(distanceToLockTarget <=  _attackRange )
+            //락온된 몬스터가 내 사정거리보다 가까우면 공격 상태로 변경
+            if (distanceToLockTarget <= _attackRange)
             {
                 State = Define.State.Skill;
                 return;
             }
         }
 
-        //이동
+        //이동 처리
         //방향과 크기를 갖는 벡터 추출
         Vector3 dir = _destPos - transform.position;
         dir.y = 0;          //몬스터 위로 올라가는 버그 방지
@@ -112,10 +117,11 @@ public class PlayerController : BaseController
         }
         else
         { //Debug.DrawRay(transform.position + Vector3.up * 0.7f, dir.normalized, Color.green);
+            // 벽에 부딪히면 Idle 상태로 변경
             if (Physics.Raycast(transform.position + Vector3.up * 0.7f, dir, 1.0f, LayerMask.GetMask("Block")))
             {
-                //마우스를 누르고 있는 경우 Idle로 바뀌지 않게 함
-                if (Input.GetMouseButton(0) == false)
+                //마우스를 누르고 있는 경우 Idle로 변경하지 않음(지속 이동)
+                if (!Input.GetMouseButton(0))
                     State = Define.State.Idle;
                 return;
 
@@ -127,14 +133,15 @@ public class PlayerController : BaseController
             //_destPos 방향을 바라봄
             transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(dir), 20 * Time.deltaTime);
             //transform.LookAt(_destPos);
-        } 
+        }
     }
 
     protected override void UpdateSkill()
     {
+        if (_isMousePressed) { CheckAndUpdateTarget(); }
+
         //타겟을 바라보도록 함
-        //1. 타겟이 있는지 확인
-        if(_lockTarget != null)
+        if (_lockTarget != null)
         {
             // 타겟 방향 벡터 계산 후 타겟 방향벡터로의 회전값 quat 생성
             Vector3 dir = _lockTarget.transform.position - transform.position;
@@ -195,9 +202,10 @@ public class PlayerController : BaseController
     //}
     #endregion
 
+    // 공격 모션 중간에 데미지 주는 시점에 호출
     public void OnHitEvent()
     {
-        
+
         if (_lockTarget != null)
         {
             Stat targetStat = _lockTarget.GetComponent<Stat>();
@@ -215,65 +223,129 @@ public class PlayerController : BaseController
 
     void OnMouseEvent(Define.MouseEvent mouseEvent)
     {
-        switch (State)
-        {
-            //MouseEvent 발생 시 State가 Idle 혹은 Moving인 경우 OnMouseEvent_IdleRun 호출
-            case Define.State.Idle:
-                OnMouseEvent_IdleRun(mouseEvent);
-                break;
-            case Define.State.Moving:
-                OnMouseEvent_IdleRun(mouseEvent);
-                break;
-            case Define.State.Skill:
-                {
-                    // 마우스를 뗀 경우 스킬 종료
-                    if (mouseEvent == Define.MouseEvent.PointerUp)
-                        _stopSkill = true;
-                }
-                break;
-        }
-
-    }
-
-    //  Idle, Moving 상태에서 마우스 이벤트 처리
-    void OnMouseEvent_IdleRun(Define.MouseEvent mouseEvent) 
-    {
-        //마우스 클릭 지점에 ray
-        RaycastHit hit;
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        bool raycastHit = Physics.Raycast(ray, out hit, 100.0f, _mask);
-        //Debug.DrawRay(Camera.main.transform.position, ray.direction * 100.0f, Color.red, 1.0f);
-        //LayerMask mask = LayerMask.GetMask("Wall");
-
         switch (mouseEvent)
         {
             case Define.MouseEvent.PointerDown:
-                {
-                    if (raycastHit)
-                    {
-                        _destPos = hit.point;
-                        State = Define.State.Moving;
-                        _stopSkill = false;
+                _isMousePressed = true;
+                _lastMousePosition = Input.mousePosition;
+                HandleMouseInput();
+                break;
 
-                        //누르는 순간에 몬스터인지 판단. 몬스터의 경우 lockTarget 지정
-                        if (hit.collider.gameObject.layer == (int)Define.Layer.Monster)
-                            _lockTarget = hit.collider.gameObject;
-                        else
-                            _lockTarget = null;
+            case Define.MouseEvent.Press:
+                // 마우스 위치가 변경되었는지 체크 
+                if (Vector3.Distance(_lastMousePosition, Input.mousePosition) > 5f) // 최소 이동 거리
+                {
+                    _lastMousePosition = Input.mousePosition;
+                    HandleMouseInput();
+                }
+                break;
+
+            case Define.MouseEvent.PointerUp:
+                _isMousePressed = false;
+                _stopSkill = true;
+                break;
+        }
+    }
+
+    // 마우스 입력 처리
+    void HandleMouseInput()
+    {
+        RaycastHit hit;
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        bool raycastHit = Physics.Raycast(ray, out hit, 100.0f, _mask);
+
+        if (raycastHit)
+        {
+            GameObject hitObject = hit.collider.gameObject;
+
+            // 몬스터를 클릭했는지 확인
+            if (hitObject.layer == (int)Define.Layer.Monster)
+            {
+                // 새로운 몬스터 타겟 설정
+                _lockTarget = hitObject;
+                _destPos = hitObject.transform.position;
+
+                // 사정거리 내에 있으면 즉시 공격, 아니면 이동 후 공격
+                float distanceToTarget = (hitObject.transform.position - transform.position).magnitude;
+                if (distanceToTarget <= _attackRange)
+                {
+                    State = Define.State.Skill;
+                }
+                else
+                {
+                    State = Define.State.Moving;
+                }
+            }
+            else
+            {
+                // 땅을 클릭한 경우 - 이동
+                _lockTarget = null;
+                _destPos = hit.point;
+                State = Define.State.Moving;
+            }
+
+            _stopSkill = false;
+        }
+    }
+
+    void CheckAndUpdateTarget()
+    {
+        RaycastHit hit;
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        bool raycastHit = Physics.Raycast(ray, out hit, 100.0f, _mask);
+
+        if (raycastHit)
+        {
+            GameObject hitObject = hit.collider.gameObject;
+
+            // 현재 마우스 위치의 타겟이 기존 타겟과 다른 경우
+            if (_lockTarget != hitObject)
+            {
+                if (hitObject.layer == (int)Define.Layer.Monster)
+                {
+                    // 새로운 몬스터로 타겟 변경
+                    _lockTarget = hitObject;
+                    _destPos = hitObject.transform.position;
+
+                    // 현재 상태에 따라 적절한 행동 결정
+                    float distanceToTarget = (hitObject.transform.position - transform.position).magnitude;
+                    if (distanceToTarget <= _attackRange && State == Define.State.Skill)
+                    {
+                        // 이미 공격 중이고 사정거리 내라면 그대로 공격 유지
+                        return;
+                    }
+                    else if (distanceToTarget <= _attackRange)
+                    {
+                        State = Define.State.Skill;
+                    }
+                    else
+                    {
+                        State = Define.State.Moving;
                     }
                 }
-                break;
-            case Define.MouseEvent.Press:
+                else
                 {
-                    if (_lockTarget == null && raycastHit)
-                        _destPos = hit.point; 
+                    // 땅으로 마우스를 옮긴 경우
+                    _lockTarget = null;
+                    _destPos = hit.point;
+
+                    // 공격 중이었다면 이동으로 변경
+                    if (State == Define.State.Skill)
+                    {
+                        State = Define.State.Moving;
+                    }
                 }
-                break;
-            case Define.MouseEvent.PointerUp:
+            }
+            
+            else if (hitObject.layer != (int)Define.Layer.Monster && _lockTarget == null)
+            {
+                // 땅 위에서 마우스를 움직이는 경우 목적지 갱신
+                _destPos = hit.point;
+                if (State == Define.State.Idle)
                 {
-                    _stopSkill = true;
+                    State = Define.State.Moving;
                 }
-                break;
+            }
         }
     }
 
