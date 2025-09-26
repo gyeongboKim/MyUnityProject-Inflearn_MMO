@@ -5,7 +5,7 @@ using UnityEngine.AI;
 
 public class MonsterController : BaseController
 {
-    Stat _stat;
+    StatHandler _statHandler;
 
     [SerializeField]
     float _scanRange = 10;
@@ -17,7 +17,7 @@ public class MonsterController : BaseController
     public override void Init()
     {
         WorldObjectType = Define.WorldObject.Monster;
-        _stat = gameObject.GetComponent<Stat>();
+        _statHandler = gameObject.GetComponent<StatHandler>();
 
         if(gameObject.GetComponentInChildren<UI_HPBar>() == null)
             Managers.UI.MakeWorldSpaceUI<UI_HPBar>(transform);
@@ -75,7 +75,7 @@ public class MonsterController : BaseController
         {
             //nma를 이용하여 길찾기 
             nma.SetDestination(_destPos);
-            nma.speed = _stat.MoveSpeed;
+            nma.speed = _statHandler.MoveSpeed;
  
             //_destPos 방향을 바라봄
             transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(dir), 20 * Time.deltaTime);
@@ -100,8 +100,8 @@ public class MonsterController : BaseController
     {
         if (_lockTarget != null)
         {
-            Stat targetStat = _lockTarget.GetComponent<Stat>();
-            targetStat.OnAttacked(_stat);
+            StatHandler targetStatHandler = _lockTarget.GetComponent<StatHandler>();
+            targetStatHandler.OnAttacked(_statHandler);
             
         }
         else
@@ -115,8 +115,8 @@ public class MonsterController : BaseController
     {
         if (_lockTarget != null)
         {
-            Stat targetStat = _lockTarget.GetComponent<Stat>();
-            if (targetStat.Hp > 0)
+            StatHandler targetStatHandler = _lockTarget.GetComponent<StatHandler>();
+            if (targetStatHandler.Hp > 0)
             {
                 float distanceToLockTarget = (_lockTarget.transform.position - transform.position).magnitude;
                 if (distanceToLockTarget <= _attackRange)

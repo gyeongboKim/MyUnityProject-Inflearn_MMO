@@ -1006,15 +1006,50 @@ MonoBehaviour:
   m_GameObject: {fileID: 8827640022007456749}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7added1727f66bf41b3760c81004ff31, type: 3}
+  m_Script: {fileID: 11500000, guid: 21b98671eb2893a45b9fab729f454328, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _level: 0
+  Stat:
+    level: 0
+    totalExp: 0
+    maxHp: 0
+    maxEnergyShield: 0
+    maxMp: 0
+    maxStamina: 0
+    hpRegen: 0
+    energyShieldRegen: 0
+    mpRegen: 0
+    staminaRegen: 0
+    attack: 0
+    attackSpeed: 0
+    castSpeed: 0
+    defense: 0
+    resistanceFire: 0
+    resistanceCold: 0
+    resistanceLightning: 0
+    resistanceChaos: 0
+    moveSpeed: 0
   _hp: 0
+  _energyShield: 0
+  _mp: 0
+  _level: 0
   _maxHp: 0
+  _maxEnergyShield: 0
+  _maxMp: 0
+  _hpRegen: 0
+  _energyShieldRegen: 0
+  _mpRegen: 0
   _attack: 0
+  _attackSpeed: 0
+  _castSpeed: 0
   _defense: 0
+  _resistanceFire: 0
+  _resistanceCold: 0
+  _resistanceLightning: 0
+  _resistanceChaos: 0
   _moveSpeed: 0
+  _goldReward: 0
+  _itemDropChance: 0
 --- !u!136 &8827640022007456748
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -1044,6 +1079,7 @@ MonoBehaviour:
   _destPos: {x: 0, y: 0, z: 0}
   _lockTarget: {fileID: 0}
   _state: 0
+  _anim: {fileID: 0}
   _scanRange: 10
   _attackRange: 2
 --- !u!1 &8827640022117317197

@@ -10,12 +10,12 @@ public class UI_HPBar : UI_Base
         HPBar
     }
 
-    Stat _stat;
+    StatHandler _statHandler;
 
     public override void Init()
     {
         Bind<GameObject>(typeof(GameObjects));
-        _stat = transform.parent.GetComponent<Stat>();
+        _statHandler = transform.parent.GetComponent<StatHandler>();
     }
 
     private void Update()
@@ -45,7 +45,7 @@ public class UI_HPBar : UI_Base
         
         // 현재 HP에서 MaxHP로 나눔
         // 둘 중 하나를 float으로 캐스팅
-        float ratio = _stat.Hp / (float)_stat.MaxHp;
+        float ratio = _statHandler.Hp / (float)_statHandler.MaxHp;
         SetHpRatio(ratio);
     }
 

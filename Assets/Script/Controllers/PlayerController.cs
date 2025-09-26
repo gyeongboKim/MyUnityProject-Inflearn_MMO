@@ -53,13 +53,13 @@ public class PlayerController : BaseController
 {
     //이후 서버가 생기는 경우
     //자신이 플레이 하는 플레이어인지, 다른 플레이어인지 분기점 필요
-    PlayerStat _stat;
+    PlayerStatHandler _statHandler;
 
     bool _stopSkill = false;
 
     float _attackRange = 2;
-    // 상호작용 사거리
-    float _interactionRange = 2.0f;
+    // 상호작용 사거리 : NPC 대화, 오브젝트 조사, 아이템 획득 등 구현 시 사용
+    //float _interactionRange = 2.0f;
 
     int _mask = (1 << (int)Define.Layer.Ground) | (1 << (int)Define.Layer.Monster);
 
@@ -72,14 +72,13 @@ public class PlayerController : BaseController
         Managers.Input.MouseAction -= OnMouseEvent;
         Managers.Input.MouseAction += OnMouseEvent;
 
+        //플레이어 오브젝트 타입 설정 및 Stat 컴포넌트 연결
         WorldObjectType = Define.WorldObject.Player;
-        _stat = gameObject.GetComponent<PlayerStat>();
+        _statHandler = gameObject.GetComponent<PlayerStatHandler>();
+
         //HP Bar 체크 및 추가
         if (gameObject.GetComponentInChildren<UI_HPBar>() == null)
             Managers.UI.MakeWorldSpaceUI<UI_HPBar>(transform);
-
-
-
     }
 
     //protected override void UpdateIdle()
@@ -128,7 +127,7 @@ public class PlayerController : BaseController
             }
             //moveDist = _speed * Time.deltaTime 값이 dir.magnitude를 넘어버려 목적지 부근에서 버벅임 발생
             //해결 : Clamp -> value가 min보다 작으면 min값을, max보다 크면 max값을 덮어줌.(min 과 max 사이값을 보장해줌)
-            float moveDist = Mathf.Clamp(_stat.MoveSpeed * Time.deltaTime, 0, dir.magnitude);
+            float moveDist = Mathf.Clamp(_statHandler.MoveSpeed * Time.deltaTime, 0, dir.magnitude);
             transform.position += dir.normalized * moveDist;
             //_destPos 방향을 바라봄
             transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(dir), 20 * Time.deltaTime);
@@ -208,8 +207,8 @@ public class PlayerController : BaseController
 
         if (_lockTarget != null)
         {
-            Stat targetStat = _lockTarget.GetComponent<Stat>();
-            targetStat.OnAttacked(_stat);
+            StatHandler targetStatHandler = _lockTarget.GetComponent<StatHandler>();
+            targetStatHandler.OnAttacked(_statHandler);
         }
         if (_stopSkill)
         {

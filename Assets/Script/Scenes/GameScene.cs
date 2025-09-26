@@ -65,7 +65,7 @@ public class GameScene : BaseScene
 
         //Managers.UI.ShowPopupUI<UI_Button>();
 
-        Dictionary<int, Data.Stat> dict = Managers.Data.StatDict;
+        Dictionary<int, Data.BaseStat> dict = Managers.Data.BaseStatDict;
 
         gameObject.GetOrAddComponent<CursorController>();
 

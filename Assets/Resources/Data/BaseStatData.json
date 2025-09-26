@@ -1,0 +1,33 @@
+{
+  "stats": [
+    {
+      "level": "1",
+      "baseMaxHp": "200",
+      "baseMaxMp": "100",
+      "baseMaxStamina": "15",
+      "basePhysicalDamage": "10",
+      "baseDefense": "5",
+      "totalExp" :  "0"
+    },
+    {
+      "level": "2",
+      "baseMaxHp": "200",
+      "baseMaxMp": "100",
+      "baseMaxStamina": "15",
+      "basePhysicalDamage": "10",
+      "baseDefense": "5",
+      "totalExp": "0"
+
+    },
+    {
+      "level": "3",
+      "baseMaxHp": "200",
+      "baseMaxMp": "100",
+      "baseMaxStamina": "15",
+      "basePhysicalDamage": "10",
+      "baseDefense": "5",
+      "totalExp": "0"
+    }
+  ]
+
+}

@@ -1,0 +1,34 @@
+{
+  "constants": {
+    "statMultipliers": {
+      "strengthToAttackDamage": 1.5,
+
+      "dexterityToAttackRating": 3.0,
+      "dexterityToAttackSpeed": 0.02,
+
+      "agilityToMoveSpeed": 0.5,
+      "agilityToMaxStamina": 0.02,
+      "agilityToStaminaRegen": 0.01,
+
+      "intellectToAbilityPower": 2.0,
+      "intellectToCastSpeed": 0.01,
+
+      "wisdomToMaxMp": 5.0,
+      "wisdomToMpRegen": 0.02,
+      "wisdomToResistanceChaos": 1.0,
+
+      "vitalityToMaxHp": 5.0,
+      "vitalityToHpRegen": 0.02,
+      "vitalityToToughness": 1.0,
+
+      "faithToItemFindChance": 0.5,
+      "luckToItemFindChance": 0.8,
+    },
+    "statCaps": {
+      "resistanceCap": 75,
+      "resistanceCapBasedOnAttributes": 30,
+      "itemFindChanceCapBasedOnAttributes": 100,
+      "moveSpeedCapBasedOnAttributes": 20,
+    }
+  }
+}
